@@ -9,10 +9,17 @@ lalrpop-util = "0.23.1"
 logos = "0.16.1"
 miette = { version = "7.6.0", features = ["fancy"] }
 
+
+
 tiny_bail = { version = "0.7", default-features = false, features = [
   "tracing",
   "error",
 ] }
+
+regex = "1.12.2"
+
+thiserror = "2.0.17"
+
 
 [build-dependencies]
 lalrpop = "0.23.1"
