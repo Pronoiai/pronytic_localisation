@@ -36,12 +36,12 @@ struct TokenErrorReport {
     advice: Option<String>,
 }
 
-#[derive(Logos, Debug, PartialEq)]
+#[derive(Logos, Clone, Debug, PartialEq)]
 #[logos(error = LexicalError)]
-enum Token {
+pub enum Token {
     // Or regular expressions.
-    #[regex("[a-zA-Z0-9]+")]
-    String,
+    #[regex("[a-zA-Z0-9]+", |lex| lex.slice().to_string())]
+    String(String),
 
     // Tokens can be literal strings, of any length.
     #[token("{")]
