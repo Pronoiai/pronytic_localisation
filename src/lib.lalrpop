@@ -1,0 +1,40 @@
+use std::str::FromStr;
+
+use crate::{LocalisationText,Token};
+
+grammar;
+
+extern {
+    type Location = usize;
+    type Error = String;
+
+    enum Token {
+        "string" => Token::String(<String>),
+        "{" => Token::OpeningCurly,
+        "}" => Token::ClosingCurly,
+        "[" => Token::OpeningSquare,
+        "]" => Token::ClosingSquare,
+        "Goto" => Token::Goto,
+        "Highlight" => Token::Highlight,
+        "Link" => Token::Link,
+    }
+}
+
+pub LocalisationText:Vec<LocalisationText> = {
+    TextPart*
+}
+
+TextPart:LocalisationText = {
+    <s:"string"> => LocalisationText::String(s),
+    "{" <c:CommandText> "}" => c,
+    "Goto" => LocalisationText::String("Goto".to_string()),
+    "Highlight" => LocalisationText::String("Highlight".to_string()),
+    "Link" => LocalisationText::String("Link".to_string()),
+
+}
+
+CommandText:LocalisationText = {
+    "Goto" "[" <s:"string"> "]" => LocalisationText::Goto(s),
+    "Highlight" "[" <s:"string"> "]" => LocalisationText::Highlight(s),
+    "Link" "[" <s:"string"> "]" => LocalisationText::Link(s),
+}

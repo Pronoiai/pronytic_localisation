@@ -1,0 +1,18 @@
+[package]
+name = "pronytic_localisation"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+lalrpop = "0.23.1"
+lalrpop-util = "0.23.1"
+logos = "0.16.1"
+miette = { version = "7.6.0", features = ["fancy"] }
+
+tiny_bail = { version = "0.7", default-features = false, features = [
+  "tracing",
+  "error",
+] }
+
+[build-dependencies]
+lalrpop = "0.23.1"
