@@ -94,7 +94,19 @@ pub fn parse_localisation(file_name: &str, contents: &str) -> Vec<LocalisationTe
         tokens.push((span.start, token, span.end));
     }
 
-    r!(lib::LocalisationTextParser::new().parse(tokens))
+    let localisation = r!(lib::LocalisationTextParser::new().parse(tokens));
+    let localised = localisation.into_iter().fold(Vec::new(), |mut acc, x| {
+        if let LocalisationText::String(ref next) = x
+            && let Some(last) = acc.last_mut()
+            && let LocalisationText::String(last_string) = last
+        {
+            last_string.push_str(&next);
+        } else {
+            acc.push(x);
+        }
+        acc
+    });
+    localised
 }
 
 /// Pretty prints the lexical error message to try and give the user
