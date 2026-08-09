@@ -6,13 +6,20 @@ use lalrpop_util::lalrpop_mod;
 use miette::{Diagnostic, NamedSource, SourceSpan};
 use regex::Regex;
 use thiserror::Error;
-use tiny_bail::prelude::*;
+use tracing::error;
 
+#[derive(Debug)]
 pub enum LocalisationText {
     String(String),
-    Highlight(String),
-    Link(String),
-    Goto(String),
+    Highlight(LocalisationDetails),
+    Link(LocalisationDetails),
+    Goto(LocalisationDetails),
+}
+
+#[derive(Debug)]
+pub struct LocalisationDetails {
+    pub link: String,
+    pub text: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq)]
@@ -40,10 +47,15 @@ struct TokenErrorReport {
 #[logos(error = LexicalError)]
 pub enum Token {
     // Or regular expressions.
-    #[regex("[a-zA-Z0-9]+", |lex| lex.slice().to_string())]
+    #[regex(r#"[^,={}\[\]"]+"#, |lex| lex.slice().to_string())]
     String(String),
 
-    // Tokens can be literal strings, of any length.
+    #[token(",")]
+    Comma,
+
+    #[token("=")]
+    Equal,
+
     #[token("{")]
     OpeningCurly,
 
@@ -55,6 +67,8 @@ pub enum Token {
 
     #[token("]")]
     ClosingSquare,
+    #[token("\"")]
+    Quote,
 
     #[token("GoTo")]
     Goto,
@@ -64,6 +78,9 @@ pub enum Token {
 
     #[token("Link")]
     Link,
+
+    #[token("Text")]
+    Text,
 }
 
 impl fmt::Display for Token {
@@ -94,7 +111,14 @@ pub fn parse_localisation(file_name: &str, contents: &str) -> Vec<LocalisationTe
         tokens.push((span.start, token, span.end));
     }
 
-    let localisation = r!(lib::LocalisationTextParser::new().parse(tokens));
+    let localisation = match lib::LocalisationTextParser::new().parse(tokens) {
+        Ok(t) => t,
+        Err(t) => {
+            error!("failed to parse {t}\n{contents:?}");
+            return Vec::new();
+        }
+    };
+
     let localised = localisation.into_iter().fold(Vec::new(), |mut acc, x| {
         if let LocalisationText::String(ref next) = x
             && let Some(last) = acc.last_mut()
@@ -137,7 +161,7 @@ fn handle_lexical_errors(
             let problem = TokenErrorReport {
                 src: NamedSource::new(file_name, input.to_string()),
                 bad_bit: (error).into(),
-                advice: Some("I don't have a definition for this word\nNote:File numbers are relative to the '#' sections".to_string()),
+                advice: Some("I don't have a definition for this word".to_string()),
             };
             panic!("{:?}", miette::Error::new(problem));
         }

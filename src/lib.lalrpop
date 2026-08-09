@@ -1,4 +1,4 @@
-use crate::{LocalisationText,Token};
+use crate::{LocalisationDetails,LocalisationText,Token};
 
 grammar;
 
@@ -8,6 +8,9 @@ extern {
 
     enum Token {
         "string" => Token::String(<String>),
+        "=" => Token::Equal,
+        "\"" => Token::Quote,
+        "," => Token::Comma,
         "{" => Token::OpeningCurly,
         "}" => Token::ClosingCurly,
         "[" => Token::OpeningSquare,
@@ -15,6 +18,7 @@ extern {
         "Goto" => Token::Goto,
         "Highlight" => Token::Highlight,
         "Link" => Token::Link,
+        "Text" => Token::Text,
     }
 }
 
@@ -24,15 +28,37 @@ pub LocalisationText:Vec<LocalisationText> = {
 
 TextPart:LocalisationText = {
     <s:"string"> => LocalisationText::String(s),
+    <c:","> => LocalisationText::String(",".to_string()),
     "{" <c:CommandText> "}" => c,
     "Goto" => LocalisationText::String("Goto".to_string()),
     "Highlight" => LocalisationText::String("Highlight".to_string()),
     "Link" => LocalisationText::String("Link".to_string()),
-
 }
 
 CommandText:LocalisationText = {
-    "Goto" "[" <s:"string"> "]" => LocalisationText::Goto(s),
-    "Highlight" "[" <s:"string"> "]" => LocalisationText::Highlight(s),
-    "Link" "[" <s:"string"> "]" => LocalisationText::Link(s),
+    "Goto" "[" <link:"string"> "," "Text" "=" "\"" <text:"string"> "\"" "]" => LocalisationText::Goto(LocalisationDetails{
+        link,
+        text,
+    }),
+    "Goto" "[" <link:"string"> "]" =>LocalisationText::Goto(LocalisationDetails{
+        text:link.clone(),
+        link,
+    }),
+    "Highlight" "[" <link:"string"> "," "Text" "=" "\"" <text:"string"> "\"" "]" => LocalisationText::Highlight(LocalisationDetails{
+        link,
+        text,
+    }),
+    "Highlight" "[" <link:"string"> "]" => LocalisationText::Highlight(LocalisationDetails{
+        text:link.clone(),
+        link,
+    }),
+    "Link" "[" <link:"string"> "," "Text" "=" "\"" <text:"string"> "\"" "]" => LocalisationText::Link(LocalisationDetails{
+        link,
+        text,
+    }),
+    "Link" "[" <link:"string"> "]" => LocalisationText::Link(LocalisationDetails{
+        text:link.clone(),
+        link,
+    }),
+
 }

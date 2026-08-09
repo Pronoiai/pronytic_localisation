@@ -16,6 +16,8 @@ tiny_bail = { version = "0.7", default-features = false, features = [
   "error",
 ] }
 
+tracing = "0.1.44"
+
 regex = "1.12.2"
 
 thiserror = "2.0.17"
