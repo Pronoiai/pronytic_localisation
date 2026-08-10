@@ -76,8 +76,8 @@ pub enum Token {
     #[token("Highlight")]
     Highlight,
 
-    #[token("Link")]
-    Link,
+    #[token("Term")]
+    Term,
 
     #[token("Text")]
     Text,

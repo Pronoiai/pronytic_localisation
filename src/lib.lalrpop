@@ -17,7 +17,7 @@ extern {
         "]" => Token::ClosingSquare,
         "Goto" => Token::Goto,
         "Highlight" => Token::Highlight,
-        "Link" => Token::Link,
+        "Term" => Token::Term,
         "Text" => Token::Text,
     }
 }
@@ -32,7 +32,7 @@ TextPart:LocalisationText = {
     "{" <c:CommandText> "}" => c,
     "Goto" => LocalisationText::String("Goto".to_string()),
     "Highlight" => LocalisationText::String("Highlight".to_string()),
-    "Link" => LocalisationText::String("Link".to_string()),
+    "Term" => LocalisationText::String("Term".to_string()),
 }
 
 CommandText:LocalisationText = {
@@ -52,11 +52,11 @@ CommandText:LocalisationText = {
         text:link.clone(),
         link,
     }),
-    "Link" "[" <link:"string"> "," "Text" "=" "\"" <text:"string"> "\"" "]" => LocalisationText::Link(LocalisationDetails{
+    "Term" "[" <link:"string"> "," "Text" "=" "\"" <text:"string"> "\"" "]" => LocalisationText::Link(LocalisationDetails{
         link,
         text,
     }),
-    "Link" "[" <link:"string"> "]" => LocalisationText::Link(LocalisationDetails{
+    "Term" "[" <link:"string"> "]" => LocalisationText::Link(LocalisationDetails{
         text:link.clone(),
         link,
     }),
