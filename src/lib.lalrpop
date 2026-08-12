@@ -28,7 +28,7 @@ pub LocalisationText:Vec<LocalisationText> = {
 
 TextPart:LocalisationText = {
     <s:"string"> => LocalisationText::String(s),
-    <c:","> => LocalisationText::String(",".to_string()),
+    <","> => LocalisationText::String(",".to_string()),
     "{" <c:CommandText> "}" => c,
     "Goto" => LocalisationText::String("Goto".to_string()),
     "Highlight" => LocalisationText::String("Highlight".to_string()),
