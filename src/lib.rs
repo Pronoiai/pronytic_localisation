@@ -14,6 +14,7 @@ pub enum LocalisationText {
     Highlight(LocalisationDetails),
     Link(LocalisationDetails),
     Goto(LocalisationDetails),
+    Parameter,
 }
 
 #[derive(Debug)]

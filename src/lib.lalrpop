@@ -33,6 +33,7 @@ TextPart:LocalisationText = {
     "Goto" => LocalisationText::String("Goto".to_string()),
     "Highlight" => LocalisationText::String("Highlight".to_string()),
     "Term" => LocalisationText::String("Term".to_string()),
+    "{" "}" => LocalisationText::Parameter,
 }
 
 CommandText:LocalisationText = {
@@ -60,5 +61,4 @@ CommandText:LocalisationText = {
         text:link.clone(),
         link,
     }),
-
 }
